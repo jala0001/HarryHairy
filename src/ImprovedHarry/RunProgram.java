@@ -11,6 +11,7 @@ import java.time.DayOfWeek;
 
 
 public class RunProgram {
+    // This is a Github test
     Scanner scanner = new Scanner(System.in);
     boolean programRunning = true;
     List<Customer> bookingList = new ArrayList<>();
@@ -311,4 +312,5 @@ public class RunProgram {
             throw new RuntimeException(e);
         }
     }
+
 }
