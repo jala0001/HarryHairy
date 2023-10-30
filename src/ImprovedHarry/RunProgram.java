@@ -74,6 +74,7 @@ public class RunProgram {
         System.out.println("Type '2' - Delete appointment");
         System.out.println("Type '3' - Check calender");
         System.out.println("Type '4' - Search after a date");
+        System.out.println("Type '5' - tjek indtjening for en specifik dag");
         System.out.println("Type '9' - Exit program");
         menuChoice();
     }
@@ -89,6 +90,12 @@ public class RunProgram {
                 String inputDate = scanner.nextLine();
                 searchByDate(inputDate);
             }
+            case 5 -> {
+                System.out.println("Indtast den dato, du vil se den samlede indbetaling for (format: YYYY-MM-DD):");
+                String date = in.nextLine();
+                getTotalEarningsForDay(date);
+            }
+
             case 9 -> programRunning = false;
 
 
@@ -163,16 +170,19 @@ public class RunProgram {
         int hour = in.nextInt();
         in.nextLine();
         int min = 0;
+        System.out.println("How much do you want to charge the customer?");
+        double price = in.nextDouble();
+        in.nextLine();
         LocalDateTime startTime = LocalDateTime.of(year, month, day, hour, min);
         int endHour = hour + 1;
         LocalDateTime endTime = LocalDateTime.of(year, month, day, endHour, min);
-        createAppointment_2(name, startTime, endTime);
+        createAppointment_2(name, startTime, endTime, price);
     }
 
 
-    public void createAppointment_2(String name, LocalDateTime startTime, LocalDateTime endTime) { // oplysningerne fra overstående metode
+    public void createAppointment_2(String name, LocalDateTime startTime, LocalDateTime endTime, double price) { // oplysningerne fra overstående metode
         if (bookingCalendar.isBookingAllowed(startTime, endTime)) { // tjekker om booking er cool - bookingCalendar objektet er initialiseret i toppen af denne klasse
-            Customer newCustomer = new Customer(name, startTime, endTime);
+            Customer newCustomer = new Customer(name, startTime, endTime, price);
             for (Days day : calender) { // vi itererer gennem 'calender' (som er en liste over min 'Days' objekter, for at finde dagen som matcher startdatoen for den nye aftale
                 if (day.getDate().equals(startTime.toLocalDate().toString())) {
                     // Find det rigtige Days-objekt baseret på datoen
@@ -312,5 +322,24 @@ public class RunProgram {
             throw new RuntimeException(e);
         }
     }
+
+    public void getTotalEarningsForDay(String date) {
+        double totalEarnings = 0;
+
+        System.out.println("Indbetalinger for den " + date + ":");
+        for (Customer customer : bookingList) {
+            // Check if the customer's appointment is on the given date
+            if (customer.getStartTime().toLocalDate().toString().equals(date)) {
+                totalEarnings += customer.getPrice();
+
+                // Udskriver kundens navn og den pris, de betalte
+                System.out.println("Kunde: " + customer.getName() + ", Betalt beløb: " + customer.getPrice() + "kr.");
+            }
+        }
+
+        System.out.println("Samlet indtjening for dagen: " + totalEarnings + "kr.");
+    }
+
+
 
 }

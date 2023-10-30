@@ -7,11 +7,13 @@ public class Customer {
     private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private double price;
 
-    public Customer(String name, LocalDateTime startTime, LocalDateTime endTime) {
+    public Customer(String name, LocalDateTime startTime, LocalDateTime endTime, double price) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.price = price;
     }
 
     public String getName() {
@@ -24,9 +26,21 @@ public class Customer {
         return endTime;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     @Override
     public String toString() {
-        return "Name: " + getName() + "\nStart time: " + getStartTime() + "\nEnd time: " + getEndTime();
+        return "Customer Name: " + name +
+                "\nStart Time: " + startTime +
+                "\nEnd Time: " + endTime +
+                "\nPrice: " + price + " kr.";
     }
+
 }
 
