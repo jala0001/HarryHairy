@@ -1,0 +1,5 @@
+Kunde Navn: Emilia
+Start Tid: 2023-11-03T15:00
+Slut Tid: 2023-11-03T16:00
+Pris: 500.0 kr.
+
