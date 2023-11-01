@@ -26,7 +26,7 @@ public class BookingSystem {
         File file = new File("tider.txt");
 
         if (!file.exists() || file.length() == 0) {
-            for (int i = 0; i < 30; i++) {
+            for (int i = -14; i < 427; i++) { // ÆNDRING
                 LocalDateTime dagsDato = LocalDateTime.now().plusDays(i);
                 String dato = dagsDato.toLocalDate().toString();
                 String dagPåUgen = dagsDato.getDayOfWeek().toString();
@@ -45,6 +45,7 @@ public class BookingSystem {
                 }
             }
         }
+        updaterKalenderFil(Kalender); // ÆNDRING - denne gør at vi får kalender oversigten før vi booker.
 
         while (kørProgram) {
             menu();
@@ -83,15 +84,23 @@ public class BookingSystem {
             case 2 -> aflysAftale();
             case 3 -> kalenderOversigt();
             case 4 -> {
-                System.out.print("Indtast dato (YYYY-MM-DD): ");
+                System.out.print("Indtast dato (YYYY-MM-DD). År kan kun være (2023/2024) ");
                 String inputDato = scanner.nextLine();
                 søgDato(inputDato);
             }
-            case 5 -> {
-                System.out.println("Indtast dato (YYYY-MM-DD):");
-                String dato = in.nextLine();
-                seTotalBeløb(dato);
+            case 5 -> { // ÆNDRING
+                System.out.println("Indtast dato (YYYY-MM-DD). År kan kun være (2023/2024):");
+                String datoInput = in.nextLine();
+                LocalDate indtastetDato = LocalDate.parse(datoInput); // Konverterer den indtastede string til en LocalDate
+                LocalDate iDag = LocalDate.now();
+                if (indtastetDato.isAfter(iDag)) {
+                    System.out.println("Du kan kun søge på dage op til en dag før dags dato");
+                    menu();
+                } else {
+                    seTotalBeløb(datoInput);
+                }
             }
+
             case 9 -> kørProgram = false;
             default -> System.out.println("Dette er ikke en valgmulighed, prøv igen");
         }
@@ -149,14 +158,14 @@ public class BookingSystem {
         System.out.println("Vil du se kaldenderen for en given dato, før du booker? (ja/nej)");
         String svar = in.nextLine();
         if (svar.equalsIgnoreCase("ja")){
-            System.out.println("Indtast dato: (YYYY-MM-DD)");
+            System.out.println("Indtast dato: (YYYY-MM-DD). År kan kun være (2023/2024)");
             String inputDato = scanner.nextLine();
             søgDato(inputDato);
         }
 
         System.out.println("Indtast kundens navn: ");
         String navn = in.nextLine();
-        System.out.println("Indtast år: (YYYY)");
+        System.out.println("Indtast år: (YYYY). År kan kun være (2023/2024)");
         int år = in.nextInt();
         in.nextLine();
         System.out.println("Indtast måned: (mm- eks: 06)");
@@ -165,7 +174,7 @@ public class BookingSystem {
         System.out.println("Indtast dag: (dd - eks: 03)");
         int dag = in.nextInt();
         in.nextLine();
-        System.out.println("Indtast tid:");
+        System.out.println("Indtast tid: (eks: 10, 13 eller 16");
         int time = in.nextInt();
         in.nextLine();
         int min = 0;
@@ -222,7 +231,7 @@ public class BookingSystem {
     }
 
     public void aflysAftale() {
-        System.out.println("Indtast år:");
+        System.out.println("Indtast år. År kan kun være (2023/2024)");
         int år = in.nextInt();
         in.nextLine();
         System.out.println("Indtast måned:");
@@ -302,6 +311,7 @@ public class BookingSystem {
             throw new RuntimeException(e);
         }
     }
+
 
 
     public void kalenderOversigt() {
