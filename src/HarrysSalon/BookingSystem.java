@@ -34,7 +34,7 @@ public class BookingSystem {
                     FileOutputStream fileOutputStream = new FileOutputStream(file, true);
                     PrintStream ps = new PrintStream(fileOutputStream);
                     Dage dage = new Dage(dato, new String[]{"10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
-                    if (dagPåUgen.equals("LØRDAG") || dagPåUgen.equals("SØNDAG")) {
+                    if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) { // SKAL SKRIVES PÅ ENGENSK DA VI BRUGER getDayOfWeek
                         ps.println("Dato: " + dato + "\nSalonen er lukket i weekenden");
                     } else {
                         ps.println(dage);
@@ -290,7 +290,7 @@ public class BookingSystem {
                 LocalDate dato = LocalDate.parse(dag.getDato());
                 String dagPåUgen = dato.getDayOfWeek().toString();
 
-                if (dagPåUgen.equals("LØRDAG") || dagPåUgen.equals("SØNDAG")) {
+                if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) { // SKAL SKRIVES PÅ ENGENSK DA VI BRUGER getDayOfWeek
                     writer.println("Dato: " + dag.getDato());
                     writer.println("Salonen er lukket i weekenden");
                 } else {
