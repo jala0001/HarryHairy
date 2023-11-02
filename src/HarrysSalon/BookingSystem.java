@@ -2,10 +2,12 @@ package HarrysSalon;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.time.LocalDate;
+
 
 
 public class BookingSystem {
@@ -72,6 +74,7 @@ public class BookingSystem {
         System.out.println("3. Se Kalenderoversigt");
         System.out.println("4. Søg efter dato");
         System.out.println("5. Tjek indtjening (dato)");
+        System.out.println("6. Tilføj ferie eller fridage");
         System.out.println("9. Afslut program");
         menuValg();
     }
@@ -100,11 +103,21 @@ public class BookingSystem {
                     seTotalBeløb(datoInput);
                 }
             }
+            case 6 -> {
+                System.out.println("Indtast dato (YYYY-MM-DD)");
+                String datoInput = in.nextLine();
+                LocalDate indtastetDato = LocalDate.parse(datoInput);
+                System.out.println("Indtast 'ferie' eller 'fridag' samt dit navn. fx: ferie - Jamie");
+                String ferieEllerFridag = in.nextLine();
+                indsætFerieEllerFridag(String.valueOf(indtastetDato), ferieEllerFridag);
+            }
 
             case 9 -> kørProgram = false;
             default -> System.out.println("Dette er ikke en valgmulighed, prøv igen");
         }
     }
+
+
 
     public static void søgDato(String søgtDato) {
         String[] tider = {
@@ -117,41 +130,52 @@ public class BookingSystem {
                 "16:00 - 17:00",
                 "17:00 - 18:00"
         };
-        try {
-            File file = new File("tider.txt");
-            Scanner inFile = new Scanner(file);
-            boolean fundetDato = false;
 
-            while (inFile.hasNextLine()) {
-                String linje = inFile.nextLine();
+        // Konverter inputstreng til LocalDate
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate = LocalDate.parse(søgtDato, formatter);
 
-                if (linje.equals(søgtDato)) {
-                    fundetDato = true;
-                    System.out.println(linje);
+        for (int dayIncrement = 0; dayIncrement < 5; dayIncrement++) {
+            LocalDate currentDate = startDate.plusDays(dayIncrement);
+            String currentDatoStr = currentDate.format(formatter);
 
-                    for (int i = 0; i < tider.length; i++) {
-                        if (inFile.hasNextLine()) {
-                            linje = inFile.nextLine();
-                            if (linje.equals("null")) {
-                                break; // Denne break må ikke være i en for-løkke. Find anden måde at afslutte på.
+            try {
+                File file = new File("tider.txt");
+                Scanner inFile = new Scanner(file);
+                boolean fundetDato = false;
+
+                while (inFile.hasNextLine()) {
+                    String linje = inFile.nextLine();
+
+                    if (linje.equals(currentDatoStr)) {
+                        fundetDato = true;
+                        System.out.println(linje);
+
+                        for (int i = 0; i < tider.length; i++) {
+                            if (inFile.hasNextLine()) {
+                                linje = inFile.nextLine();
+                                if (linje.equals("null")) {
+                                    break;
+                                }
+                                System.out.println(linje);
                             }
-                            System.out.println(linje);
                         }
+                        break;
                     }
-                    break; // NEJ NEJ ENDNU EN BREAK! tsk tsk tsk.
                 }
-            }
 
-            if (!fundetDato) {
-                System.out.println("Ingen reservationer fundet for denne dato.");
-            }
+                if (!fundetDato) {
+                    System.out.println("\n" + currentDatoStr + " har ingen reservationer grundet weekend\n");
+                }
 
-            inFile.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("En fejl opstod.");
-            e.printStackTrace();
+                inFile.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("En fejl opstod.");
+                e.printStackTrace();
+            }
         }
     }
+
 
 
     public void opretAftale() {
@@ -217,16 +241,10 @@ public class BookingSystem {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-           /* File file1 = new File("tider.txt"); // har ikke det store formål i min kode men tør ikke slette noget nu hvor programmet fungerer.
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(file1, true); // intet formål
-                PrintStream ps = new PrintStream(fileOutputStream); // intet formål
 
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-
-            */
+        }
+        else {
+            System.out.println("Du kan ikke lave en reservation i weekenden!");
         }
     }
 
@@ -341,6 +359,57 @@ public class BookingSystem {
 
         System.out.println("Samlet indtjening for dagen: " + totalIndtjening + "kr.");
     }
+
+    public static void indsætFerieEllerFridag(String dato, String type) {
+        List<String> filIndhold = new ArrayList<>();
+
+        try {
+            File file = new File("tider.txt");
+            Scanner inFile = new Scanner(file);
+            boolean datoIndsat = false;
+
+            while (inFile.hasNextLine()) {
+                String linje = inFile.nextLine();
+
+                if (linje.equals(dato)) {
+                    filIndhold.add(linje);
+                    for (int i = 0; i < 8; i++) { // 8 tidsintervaller pr. dag
+                        if (inFile.hasNextLine()) {
+                            inFile.nextLine(); // springer de næste linjer over
+                        }
+                        filIndhold.add(type);
+                    }
+                    datoIndsat = true;
+                } else {
+                    filIndhold.add(linje);
+                }
+            }
+
+            if (!datoIndsat) {
+                filIndhold.add(dato);
+                for (int i = 0; i < 8; i++) {
+                    filIndhold.add(type);
+                }
+            }
+
+            inFile.close();
+
+            // Skriv opdateret indhold til filen
+            FileWriter fw = new FileWriter("tider.txt");
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (String s : filIndhold) {
+                bw.write(s);
+                bw.newLine();
+            }
+            bw.close();
+
+        } catch (IOException e) {
+            System.out.println("En fejl opstod.");
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 }
