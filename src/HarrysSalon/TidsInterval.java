@@ -4,7 +4,7 @@ public class TidsInterval {
     private String start;
     private String slut;
     private Kunder kunder;
-    private boolean ledig = true;  // by default, it should be available
+    private boolean ledig = true;
 
 
 

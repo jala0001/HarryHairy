@@ -16,7 +16,6 @@ public class BookingSystem {
     List<Kunder> bookingListe = new ArrayList<>();
     List<Dage> Kalender = new ArrayList<>();
     BookingKalender bookingKalender = new BookingKalender();
-    //Dage dage = new Dage("dato", new String[]{"10", "11", "12", "13", "14", "15", "16", "17"}); // skal nok bare slettes
     Scanner in = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -28,7 +27,7 @@ public class BookingSystem {
         File file = new File("tider.txt");
 
         if (!file.exists() || file.length() == 0) {
-            for (int i = -14; i < 427; i++) { // ÆNDRING
+            for (int i = -14; i < 427; i++) {
                 LocalDateTime dagsDato = LocalDateTime.now().plusDays(i);
                 String dato = dagsDato.toLocalDate().toString();
                 String dagPåUgen = dagsDato.getDayOfWeek().toString();
@@ -36,7 +35,7 @@ public class BookingSystem {
                     FileOutputStream fileOutputStream = new FileOutputStream(file, true);
                     PrintStream ps = new PrintStream(fileOutputStream);
                     Dage dage = new Dage(dato, new String[]{"10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"});
-                    if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) { // SKAL SKRIVES PÅ ENGENSK DA VI BRUGER getDayOfWeek
+                    if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) {
                         ps.println("Dato: " + dato + "\nSalonen er lukket i weekenden");
                     } else {
                         ps.println(dage);
@@ -47,7 +46,7 @@ public class BookingSystem {
                 }
             }
         }
-        updaterKalenderFil(Kalender); // ÆNDRING - denne gør at vi får kalender oversigten før vi booker.
+        updaterKalenderFil(Kalender);
 
         while (kørProgram) {
             menu();
@@ -91,10 +90,10 @@ public class BookingSystem {
                 String inputDato = scanner.nextLine();
                 søgDato(inputDato);
             }
-            case 5 -> { // ÆNDRING
+            case 5 -> {
                 System.out.println("Indtast dato (YYYY-MM-DD). År kan kun være (2023/2024):");
                 String datoInput = in.nextLine();
-                LocalDate indtastetDato = LocalDate.parse(datoInput); // Konverterer den indtastede string til en LocalDate
+                LocalDate indtastetDato = LocalDate.parse(datoInput);
                 LocalDate iDag = LocalDate.now();
                 if (indtastetDato.isAfter(iDag)) {
                     System.out.println("Du kan kun søge på dage op til en dag før dags dato");
@@ -131,7 +130,7 @@ public class BookingSystem {
                 "17:00 - 18:00"
         };
 
-        // Konverter inputstreng til LocalDate
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(søgtDato, formatter);
 
@@ -218,12 +217,11 @@ public class BookingSystem {
             for (Dage dag : Kalender) {
                 if (dag.getDato().equals(startTid.toLocalDate().toString())) {
 
-                   // String timeSlot = startTid.toLocalTime() + " - " + slutTid.toLocalTime(); // Kan ikke huske hvorfor jeg oprettede denne linje
                     TidsInterval[] tidsIntervaller = dag.getTidsIntervaller();
                     for (TidsInterval interval : tidsIntervaller) {
                         if (interval.getStart().equals(startTid.toLocalTime().toString()) && interval.getSlut().equals(slutTid.toLocalTime().toString())) {
                             interval.book(nyKunde);
-                            break; // NO BREAK HONAY
+                            break;
                         }
                     }
                     updaterKalenderFil(Kalender);
@@ -268,7 +266,7 @@ public class BookingSystem {
         for (Kunder kunde : bookingListe) {
             if (kunde.getStartTid().equals(aftaleTid)) {
                 kunderSomSkalSlettes = kunde;
-                break; // Damn
+                break;
             }
         }
 
@@ -283,10 +281,10 @@ public class BookingSystem {
                         if (interval != null && interval.getStart().equals(aftaleTid.toLocalTime().toString())) {
                             interval.setLedig(true);
                             interval.aflys();
-                            break; // åh nej
+                            break;
                         }
                     }
-                    break; // fuck
+                    break;
                 }
             }
 
@@ -308,7 +306,7 @@ public class BookingSystem {
                 LocalDate dato = LocalDate.parse(dag.getDato());
                 String dagPåUgen = dato.getDayOfWeek().toString();
 
-                if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) { // SKAL SKRIVES PÅ ENGENSK DA VI BRUGER getDayOfWeek
+                if (dagPåUgen.equals("SATURDAY") || dagPåUgen.equals("SUNDAY")) {
                     writer.println("Dato: " + dag.getDato());
                     writer.println("Salonen er lukket i weekenden");
                 } else {
@@ -373,9 +371,9 @@ public class BookingSystem {
 
                 if (linje.equals(dato)) {
                     filIndhold.add(linje);
-                    for (int i = 0; i < 8; i++) { // 8 tidsintervaller pr. dag
+                    for (int i = 0; i < 8; i++) {
                         if (inFile.hasNextLine()) {
-                            inFile.nextLine(); // springer de næste linjer over
+                            inFile.nextLine();
                         }
                         filIndhold.add(type);
                     }
@@ -394,7 +392,6 @@ public class BookingSystem {
 
             inFile.close();
 
-            // Skriv opdateret indhold til filen
             FileWriter fw = new FileWriter("tider.txt");
             BufferedWriter bw = new BufferedWriter(fw);
             for (String s : filIndhold) {
