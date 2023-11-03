@@ -74,7 +74,7 @@ public class BookingSystem {
         System.out.println("4. Søg efter dato");
         System.out.println("5. Tjek indtjening (dato)");
         System.out.println("6. Tilføj ferie eller fridage");
-        System.out.println("9. Afslut program");
+        System.out.println("9. Afslut program\n");
         menuValg();
     }
 
@@ -197,11 +197,11 @@ public class BookingSystem {
         System.out.println("Indtast dag: (dd - eks: 03)");
         int dag = in.nextInt();
         in.nextLine();
-        System.out.println("Indtast tid: (eks: 10, 13 eller 16");
+        System.out.println("Indtast tid: (eks: 10, 13 eller 16)");
         int time = in.nextInt();
         in.nextLine();
         int min = 0;
-        System.out.println("Indtast pris");
+        System.out.println("Indtast pris:");
         double prise = in.nextDouble();
         in.nextLine();
         LocalDateTime startTime = LocalDateTime.of(år, måned, dag, time, min);
